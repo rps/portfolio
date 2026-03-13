@@ -1,0 +1,53 @@
+---
+title: "Packwise"
+tagline: "AI-powered packing list app that learns what you need"
+order: 3
+icon: "🧳"
+tags: ["Mobile", "AI"]
+stack:
+  [
+    "React Native",
+    "Expo 54",
+    "TypeScript",
+    "OpenAI GPT-3.5-turbo",
+    "Vercel Serverless",
+    "AsyncStorage",
+    "Jest",
+    "Maestro",
+  ]
+architecture: "React Native app → Vercel serverless (OpenAI GPT-3.5-turbo) → AsyncStorage (local persistence)"
+metrics:
+  - "12 built-in activity focus types with seed item libraries"
+  - "3-tier AI fallback (API → pattern matching → generic)"
+  - "6 Maestro E2E test flows"
+  - "Fractional quantity math for smart per-day scaling"
+keyDecisions:
+  - title: "useStorage hook over a state management library"
+    description: "The data model is simple enough that a custom hook backed by AsyncStorage is clearer than Redux boilerplate. One hook handles CRUD, import/export with dedup, and first-launch seeding from deterministic IDs."
+  - title: "Vercel serverless over direct OpenAI calls"
+    description: "Keeps the API key out of the mobile bundle entirely. The serverless function also handles GPT's tendency to wrap JSON in markdown code fences and normalizes inconsistent field names in the response."
+  - title: "GitHub dark mode palette"
+    description: "The color system deliberately uses GitHub's dark mode colors — familiar to developer early adopters and visually distinctive from the typical bright-white mobile app aesthetic."
+links:
+  betaAccess: true
+---
+
+## The Problem
+
+Every trip starts with the same question: "What do I need to pack?" Generic packing lists don't account for trip-specific activities — you're packing for a 3-day hiking trip differently than a 2-week business trip with a beach day. And quantity math is surprisingly tricky: how many pairs of pants for a 5-day trip?
+
+Existing packing apps are either glorified checklists with no intelligence, or require manual setup for every trip. None of them understand that different activities require different gear, or that some items scale with trip duration while others don't.
+
+## Visual Demo
+
+"Screenshots coming soon — the app features a dark UI with progress rings, animated buttons, and AI-suggested packing themes."
+
+## The Solution
+
+The data model uses a two-layer normalized architecture that separates what you own from what you're bringing. A canonical Item registry stores every packable item with metadata including a `perDay: boolean` flag that controls how quantities scale with trip duration. When generating a list, the pipeline resolves each item against the trip length — `perDay` items multiply their base quantity by the number of days, and fractional quantities enable surprisingly smart scaling. Pants carry a base quantity of 0.5 with `perDay: true`, so a 4-day trip resolves to `Math.ceil(0.5 × 4) = 2` pairs. Socks carry 1.0, so the same trip produces 4 pairs. Items like a toothbrush have `perDay: false` and always resolve to exactly 1. The trip-specific PackListItems snapshot these resolved quantities, decoupling the live registry from any individual trip's state so edits to one trip never corrupt another.
+
+AI suggestions flow through a three-tier fallback that guarantees useful output regardless of network conditions. The primary path hits a Vercel serverless function that calls GPT-3.5-turbo with the user's activity description and — critically — the list of available category IDs, so the model maps suggestions into existing categories rather than hallucinating new ones. The serverless layer earns its keep here: it strips the markdown code fences that GPT loves to wrap around JSON responses, normalizes inconsistent field names (`itemName` vs `name` vs `item`), and validates the response shape before returning it to the client. When the network is unavailable, client-side pattern matching scans the activity description against 14 hardcoded activity patterns — "hiking" triggers outdoor gear, "beach" triggers swimwear and sunscreen, "business" triggers formal attire — producing relevant suggestions without any API call. If even pattern matching fails to find a confident match, a generic essentials list provides the final fallback. The app always produces something useful, and the user never sees an error screen where suggestions should be.
+
+Twelve built-in Focus Options — hiking, business, beach, camping, skiing, and seven more — provide curated seed item libraries that bootstrap a new user's experience. Each Focus Option ships with a tuned set of items, categories, and per-day flags that reflect real packing patterns for that activity type. User-created Themes extend this vocabulary through AI suggestions: describe an activity, and the suggestion pipeline proposes items drawn from the canonical registry or creates new ones. Both Focus Options and Themes resolve through the same `generatePackingList()` pipeline, which deduplicates by name using case-insensitive comparison and merges quantities intelligently — if two sources both suggest "Socks" with different quantities, the higher value wins.
+
+The UI leans into tactile feedback despite the constraints of React Native's animation system. A custom ProgressRing component renders without SVG — four `View` elements with conditional `borderColor` values rotate to approximate a circular progress indicator, with each quadrant independently colored based on the completion percentage. It is not pixel-perfect, but it is lightweight and avoids pulling in a native SVG dependency. Every interactive button uses `Animated.spring` with `friction: 3` for a bouncy press-and-release feel that makes tapping items off a checklist genuinely satisfying. The dark theme draws directly from GitHub's dark mode color palette — `#0d1117` backgrounds, `#c9d1d9` text, `#58a6ff` accents — a deliberate choice that feels immediately familiar to the developer early adopters who are the app's first audience, while standing out sharply from the sea of bright-white productivity apps on the App Store.

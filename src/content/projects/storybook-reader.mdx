@@ -1,0 +1,49 @@
+---
+title: "Storybook Reader"
+tagline: "iPad reading app purpose-built for visually impaired children"
+order: 2
+icon: "📱"
+tags: ["Mobile", "AI"]
+stack:
+  [
+    "React Native",
+    "Expo 54",
+    "Expo Router",
+    "TypeScript",
+    "expo-image",
+    "React Native New Architecture",
+    "EAS Build",
+  ]
+architecture: "React Native app → Storybook API (Fly.io) → Supabase + Cloudflare R2"
+metrics:
+  - "Custom Expo config plugin for iOS orientation enforcement"
+  - "O(1) scroll-to-index via pre-computed getItemLayout"
+  - "Comprehensive test suite covering series navigation, chapter dividers, accessibility"
+keyDecisions:
+  - title: "Native app over web PWA"
+    description: "Landscape orientation locking and full-screen control are impossible in mobile Safari. A native app was the only way to guarantee the controlled, distraction-free reading environment that CVI accommodation requires."
+  - title: "Fixed 55/45 image-text split"
+    description: "Not responsive to content length or image aspect ratio. This rigidity is intentional — CVI research shows that consistent, predictable layouts improve comprehension. The reading experience should be identical on every page."
+  - title: "Discriminated union SeriesPage type"
+    description: "Chapter divider pages are interleaved into the flat page array. The renderer checks item.type === 'divider' and branches. This lets the single-book viewer and series viewer share identical FlatList rendering code."
+links:
+  betaAccess: true
+---
+
+## The Problem
+
+The Storybook web viewer works, but children with CVI need a controlled, distraction-free reading environment. A tablet held in landscape provides a larger image at closer range — critical for CVI accommodation. Web browsers introduce toolbars, tabs, and navigation chrome that create visual noise.
+
+Parents and therapists need an app they can hand to a child without worrying about accidental navigation, browser UI distractions, or inconsistent rendering across devices.
+
+## Visual Demo
+
+Screenshots coming soon — the iPad app displays books in landscape with a 55/45 image-text split, page-by-page navigation, and chapter dividers for series.
+
+## The Solution
+
+Locking an iPad to landscape sounds trivial — Expo provides an `orientation: landscape` config option — but individual view controllers can override it, and several system-presented controllers do exactly that. The fix is a custom Expo config plugin that patches `AppDelegate.swift` at build time, injecting a `UIInterfaceOrientationMask` override at the UIApplication level. This forces landscape regardless of what any child view controller requests. The page reader itself is a horizontal FlatList with `pagingEnabled` and a pre-computed `getItemLayout` function that returns exact offsets for any index without measuring — giving O(1) scroll-to-index and jank-free page snapping. Each page enforces a fixed 55% image / 45% text column split. Text that exceeds the column height scrolls within its container. The `onViewableItemsChanged` callback and its companion viewability config object are wrapped in `useRef` to prevent re-creation on render, which is a hard requirement of React Native's FlatList — passing a new function reference causes the component to silently drop the callback entirely.
+
+Series support transforms the data model from a flat list of pages into an interleaved sequence of content pages and chapter dividers. The `toSeriesPages` function walks the chapter list and inserts `ChapterDividerPage` objects at each boundary, producing a single flat array typed as a discriminated union — `item.type === 'divider'` branches to a full-screen chapter title card, while `item.type === 'page'` renders the standard image-text layout. This means the single-book viewer and the series viewer share identical FlatList rendering code with no conditional logic at the list level. A "Next Chapter" button appears contextually on the last page of each non-final chapter. Chapter boundaries are pre-computed during the transform, and the progress dots at the bottom of the screen include chapter separator indicators so readers always know where they are in the larger work.
+
+The API client handles the surprisingly tricky problem of connecting to a development server from three different environments. Android emulators route `10.0.2.2` to the host machine's loopback interface, iOS simulators use `localhost` directly, and production builds hit the Fly.io deployment. An environment-aware base URL selector detects the current platform and build profile at startup, choosing the correct address without any manual configuration. This keeps the development loop fast — a single `expo start` command works regardless of which simulator or device is connected.

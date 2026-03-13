@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #faf8f5;
+  --color-cream-dark: #f0ede8;
+  --color-ink: #1a1a1a;
+  --color-ink-light: #4a4a4a;
+  --color-ink-muted: #7a7a7a;
+  --color-accent: #3b82a0;
+  --color-accent-light: #e8f4f8;
+  --color-border: #e5e0da;
+  --color-tag-mobile: #7c5cfc;
+  --color-tag-mobile-bg: #f0edff;
+  --color-tag-web: #0e9f6e;
+  --color-tag-web-bg: #ecfdf5;
+  --color-tag-extension: #e07b39;
+  --color-tag-extension-bg: #fff4ed;
+  --color-tag-ai: #d946a8;
+  --color-tag-ai-bg: #fdf2f8;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scroll fade-in animation */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+
+.fade-in-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card hover lift */
+.card-hover {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Filter button active state */
+.filter-btn {
+  transition: all 0.15s ease;
+}
+
+.filter-btn.active {
+  background-color: var(--color-ink);
+  color: white;
+}
+
+/* Pill badge base */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}

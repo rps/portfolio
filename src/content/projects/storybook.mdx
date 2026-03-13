@@ -1,0 +1,59 @@
+---
+title: "Storybook"
+tagline: "AI-powered photorealistic illustration pipeline for children with visual disabilities"
+order: 1
+icon: "📖"
+tags: ["AI", "Web"]
+stack:
+  [
+    "TypeScript",
+    "Hono",
+    "Supabase",
+    "Upstash Redis",
+    "OpenAI GPT-4.1-mini",
+    "GPT-image-1-mini",
+    "Cloudflare R2",
+    "Fly.io",
+    "Vercel",
+    "Playwright",
+    "Docker",
+  ]
+architecture: "Frontend (Vercel, static HTML) → API (Fly.io, Hono/TypeScript) → Supabase (Postgres) + Upstash Redis (job queue) → Worker (Fly.io) → OpenAI API + Cloudflare R2"
+metrics:
+  - "46 fairy tales catalogued across 2 public domain collections"
+  - "5 classic novels with chapter-by-chapter processing plans"
+  - "3-attempt safety fallback with semantic prompt escalation"
+  - "9 database migrations tracking schema evolution"
+  - "Full E2E test suite with Playwright (14 test files)"
+keyDecisions:
+  - title: "Separate API and Worker services"
+    description: "Cost control pattern — the deployed API is intentionally read-only. The AI pipeline runs locally where costs can be monitored. The public endpoint only serves pre-processed content."
+  - title: "Upstash Redis polling with sorted-set delayed jobs"
+    description: "Upstash has no blocking pop (BLPOP). The worker polls with a 5-second interval and uses a sorted set with timestamp scores for rate limit backoff, promoting delayed jobs when their wait time expires."
+  - title: "Hand-rolled image regeneration UX"
+    description: "Admin can click any thumbnail to open a lightbox, edit the AI prompt, regenerate, then approve or reject in a side-by-side comparison view. Rejected images are deleted from R2; approved ones replace the original."
+links:
+  demo: "https://storybook-mu-ecru.vercel.app"
+---
+
+## The Problem
+
+Children with Cerebral Visual Impairment (CVI) struggle with abstract visual representations — cartoons, illustrations, stylized art. Their brains can't process these simplified visual forms, making traditional picture books ineffective for literacy development. However, photorealistic imagery is unaffected.
+
+There are no photorealistically illustrated children's books on the market. The few resources that exist require manual photo shoots for every scene — impractical for the hundreds of illustrations a full book series demands.
+
+Storybook solves this with a fully automated pipeline: feed it a story URL, and it produces a photorealistically illustrated book with consistent character appearances across every page.
+
+## Visual Demo
+
+Screenshots coming soon — the web viewer displays a library of illustrated books with a page-by-page reader.
+
+## The Solution
+
+The pipeline begins with ingestion. A Cheerio-based scraper strips site-specific boilerplate from Project Gutenberg, Wikisource, and Lit2Go, handling the idiosyncrasies of each source's HTML structure. The raw text then passes through two sequential LLM cleaning stages: the first strips publisher metadata, forewords, and licensing blocks from the head and tail of the document; the second corrects OCR artifacts — misrecognized characters, broken ligatures, phantom line breaks — while deliberately preserving archaic spelling and period-appropriate punctuation. The result is clean, faithful source text ready for illustration planning.
+
+Text chunking splits the cleaned document at approximately 800 characters, respecting paragraph boundaries with a 400-character minimum and 1,200-character maximum. This sounds straightforward until you encounter 18th-century prose. Dialogue fragments like "Alas!" or "Indeed!" create false sentence boundaries that would produce meaninglessly short chunks. The splitter detects these by checking whether the next fragment begins with a lowercase letter — a strong signal that the sentence continues — and re-merges them. Once chunks are stable, GPT-4.1-mini performs scene identification, selecting one to three sentences per chunk that would make a compelling illustration. The instructions explicitly bias toward warm, joyful moments and away from peril, even when the source material — classic literature being what it is — describes it in detail.
+
+Image generation targets photorealism against pure black backgrounds (#000000), a deliberate CVI accommodation that eliminates visual noise and maximizes figure-ground contrast. Maintaining character consistency across dozens of pages is the hardest problem in the pipeline. A persistent JSONB document per book tracks every character's established appearance — hair color, clothing, facial features, age — and each generation prompt includes these details with `[MUST MATCH EXACTLY]` prefixes. Reference images from the two surrounding pages feed OpenAI's `images/edits` endpoint, giving the model visual anchors alongside the text description. The results are not perfect, but they are remarkably consistent for a fully automated system.
+
+Classic literature inevitably triggers content safety filters — a scene where a wolf menaces a child, a villain brandishing a weapon, a character in distress. The pipeline handles this with a three-attempt fallback system. The first attempt uses the original prompt verbatim. If rejected, the second attempt rewrites the prompt at low temperature, preserving all technical directives (black background, character descriptions, aspect ratio) while softening the scene description. The third attempt reimagines the scene from an entirely different visual angle, with specific reframing strategies provided to the model — shifting from a wide shot of conflict to a close-up of a character's hopeful expression, for example. The job queue backing all of this runs on Upstash Redis, which lacks blocking pop operations. The worker polls at a 5-second interval, processing one chunk at a time. Rate limit responses trigger a sorted-set delayed job mechanism: failed jobs are inserted with a timestamp score representing when they should next be attempted, and the polling loop promotes them back to the active queue once their wait time expires. Exponential backoff on repeated failures prevents runaway API costs.
