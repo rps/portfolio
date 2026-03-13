@@ -76,6 +76,41 @@ body {
   color: white;
 }
 
+/* Project content — card-grouped sections between h2 headings */
+.project-content > h2 {
+  background: white;
+  margin-top: 2.5rem !important;
+  margin-bottom: 0 !important;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-accent);
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.project-content > h2:first-child {
+  margin-top: 0 !important;
+}
+
+.project-content > *:not(h2) {
+  background: white;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0.75rem 1.5rem;
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.project-content > h2 + * {
+  padding-top: 1.25rem;
+}
+
+.project-content > *:not(h2):has(+ h2),
+.project-content > *:last-child {
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding-bottom: 1.5rem;
+}
+
 /* Pill badge base */
 .pill {
   display: inline-flex;
