@@ -71,8 +71,9 @@ function getTagColor(tag: string): string {
               <img src={project.data.thumbnail} alt={project.data.title} class="w-full h-full object-cover" />
             ) : (
               <div class="text-center p-6">
-                <div class="text-4xl mb-2">{project.data.icon}</div>
-                <p class="text-sm text-ink-muted font-medium">{project.data.title}</p>
+                <img src={`/projects/${project.id}/icon.png`} alt={project.data.title} class="w-16 h-16 rounded-2xl mx-auto" onerror="this.style.display='none';this.nextElementSibling.style.display=''" />
+                <div class="text-4xl mb-2" style="display:none">{project.data.icon}</div>
+                <p class="text-sm text-ink-muted font-medium mt-2">{project.data.title}</p>
               </div>
             )}
           </div>
