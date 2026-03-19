@@ -7,10 +7,10 @@ const sortedProjects = projects.sort((a, b) => a.data.order - b.data.order);
 
 const allTags = [...new Set(sortedProjects.flatMap((p) => p.data.tags))];
 const skills = [
-  'TypeScript', 'React Native', 'Expo', 'Next.js', 'Astro',
+  'TypeScript', 'React', 'Claude CLI', 'Expo', 'Next.js', 'Astro',
   'OpenAI', 'Firebase', 'Tailwind CSS', 'GraphQL', 'Node.js',
-  'Cloudflare', 'Vercel', 'Supabase', 'Python', 'Go', 'Ruby',
-  'Hono', 'Zustand', 'Playwright', 'Jest', 'Docker'
+  'React Native', 'Cloudflare', 'Vercel', 'Supabase', 'SQL', 'Python', 'Go', 'Ruby',
+  'Hono', 'Zustand', 'Playwright', 'Maestro E2E', 'Jest', 'Docker'
 ];
 
 const tagColors = {
