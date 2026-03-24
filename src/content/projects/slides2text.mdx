@@ -11,6 +11,11 @@ metrics:
   - "3 output formats: plain text, Word, EPUB"
   - "Speaker notes extraction with slide-number filtering"
   - "Zero file storage — in-memory processing only"
+keyDecisions:
+  - title: "Zero file storage"
+    description: "In-memory processing only — no temp files or cloud storage needed, simplifying deployment and privacy."
+  - title: "Namespace-aware XML traversal"
+    description: "PPTX uses a:r/a:t elements; custom tree walking handles namespaces and deduplicates animation-induced text repeats."
 links:
   demo: "https://slides2text-sigma.vercel.app"
 ---
