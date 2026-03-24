@@ -9,6 +9,7 @@ interface Props {
 
 const { title, description = 'AI-Native Consumer Software by Rich Parrish', ogImage = '/og-default.png' } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://richparrish.dev');
+const isResumePage = Astro.url.pathname.startsWith('/resume');
 ---
 
 <!doctype html>
@@ -62,9 +63,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://richparr
             </a>
           </div>
         </div>
-        <a href="/resume" class="text-sm text-ink-muted hover:text-ink transition-colors">
-          Resume &rarr;
-        </a>
+        {isResumePage ? (
+          <a href="/" class="text-sm font-medium px-4 py-1.5 rounded-lg border border-border text-ink hover:bg-cream-dark transition-colors">
+            &larr; Portfolio
+          </a>
+        ) : (
+          <a href="/resume" class="text-sm font-medium px-4 py-1.5 rounded-lg border border-border text-ink hover:bg-cream-dark transition-colors">
+            Resume &rarr;
+          </a>
+        )}
       </div>
     </nav>
 

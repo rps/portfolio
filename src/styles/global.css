@@ -78,21 +78,22 @@ body {
   color: white;
 }
 
-/* Project content — card-grouped sections between h2 headings */
+/* Project content — section headings match template sections */
 .project-content > h2 {
-  background: white;
-  margin-top: 2.5rem !important;
-  margin-bottom: 0 !important;
-  padding: 1rem 1.5rem;
-  border: 1px solid var(--color-border);
-  border-bottom: 2px solid var(--color-accent);
-  border-radius: 0.75rem 0.75rem 0 0;
+  font-size: 1.25rem !important;
+  font-weight: 600;
+  color: var(--color-ink);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-top: 3rem !important;
+  margin-bottom: 1rem !important;
 }
 
 .project-content > h2:first-child {
   margin-top: 0 !important;
 }
 
+/* Card body for content between h2 headings */
 .project-content > *:not(h2) {
   background: white;
   margin-top: 0 !important;
@@ -103,14 +104,40 @@ body {
 }
 
 .project-content > h2 + * {
+  border-top: 1px solid var(--color-border);
+  border-radius: 0.75rem 0.75rem 0 0;
   padding-top: 1.25rem;
 }
 
-.project-content > *:not(h2):has(+ h2),
-.project-content > *:last-child {
+/* Remove lightbox from card layout (JS moves it to body) */
+.project-content > .lightbox {
+  display: none !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.project-content > *:not(h2):not(.lightbox):has(+ h2),
+.project-content > *:not(h2):not(.lightbox):last-child {
   border-bottom: 1px solid var(--color-border);
   border-radius: 0 0 0.75rem 0.75rem;
   padding-bottom: 1.5rem;
+}
+
+.project-content > h2 + *:not(.lightbox):last-child,
+.project-content > h2 + *:not(.lightbox):has(+ h2) {
+  border-radius: 0.75rem;
+}
+
+/* Gallery wrapper before lightbox gets bottom card treatment */
+.project-content > .screenshot-gallery-wrapper {
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding-bottom: 1.5rem;
+}
+
+.project-content > h2 + .screenshot-gallery-wrapper {
+  border-radius: 0.75rem;
 }
 
 /* Pill badge base */
