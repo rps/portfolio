@@ -4,17 +4,7 @@ tagline: "Convert presentations to readable formats — text, Word, or EPUB"
 order: 7
 icon: "📊"
 tags: ["Web"]
-stack:
-  [
-    "Next.js 14",
-    "React 18",
-    "TypeScript",
-    "JSZip",
-    "xml2js",
-    "docx",
-    "Tailwind CSS",
-    "Vercel",
-  ]
+stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Vercel"]
 architecture: "Next.js app → JSZip + xml2js (server) or DOMParser (browser) → docx / EPUB / text output"
 metrics:
   - "Dual processing paths: server (<4MB) and browser (>4MB)"
