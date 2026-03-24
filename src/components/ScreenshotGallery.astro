@@ -57,6 +57,7 @@ const { screenshots, device = "phone" } = Astro.props;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
+    scroll-snap-type: x mandatory;
   }
 
   .gallery-scroll {
@@ -110,6 +111,7 @@ const { screenshots, device = "phone" } = Astro.props;
     background: none;
     border: none;
     padding: 0;
+    scroll-snap-align: center;
   }
 
   .gallery-caption {
@@ -475,7 +477,7 @@ const { screenshots, device = "phone" } = Astro.props;
       function getSkipAmount() {
         const item = wrapper?.querySelector(".gallery-item") as HTMLElement | null;
         if (!item) return 200;
-        return item.offsetWidth + 20; // item width + gap (1.25rem)
+        return (item.offsetWidth + 20);
       }
 
       function updateNavVisibility() {
