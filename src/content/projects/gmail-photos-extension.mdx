@@ -33,4 +33,26 @@ A Chrome Manifest V3 extension that injects a Google Photos picker button into G
 
 ## Visual Demo
 
-"Screenshots coming soon — the extension adds a 'Photos' button to Gmail's compose toolbar, styled to match Gmail's native aesthetic."
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="browser"
+  screenshots={[
+    {
+      src: "/projects/gmail-photos-extension/1.png",
+      caption: "Photos button in compose toolbar",
+    },
+    {
+      src: "/projects/gmail-photos-extension/2.png",
+      caption: "Click to open Google Photos picker",
+    },
+    {
+      src: "/projects/gmail-photos-extension/3.png",
+      caption: "Select photos from your library",
+    },
+    {
+      src: "/projects/gmail-photos-extension/4.png",
+      caption: "Photos attached to your email",
+    },
+  ]}
+/>
