@@ -19,11 +19,11 @@ stack:
   ]
 architecture: "Frontend (Vercel, static HTML) → API (Fly.io, Hono/TypeScript) → Supabase (Postgres) + Upstash Redis (job queue) → Worker (Fly.io) → OpenAI API + Cloudflare R2"
 metrics:
-  - "46 fairy tales catalogued across 2 public domain collections"
-  - "5 classic novels with chapter-by-chapter processing plans"
+  - "15+ fairy tales catalogued across 2 public domain collections"
+  - "4 classic novels with chapter-by-chapter processing plans"
   - "3-attempt safety fallback with semantic prompt escalation"
   - "9 database migrations tracking schema evolution"
-  - "Full E2E test suite with Playwright (14 test files)"
+  - "Full E2E test suite with Playwright (14 test flows)"
 keyDecisions:
   - title: "Character consistency through context propagation"
     description: "A significant challenge with AI illustration is that each render is independent, so a character can look completely different from one page to the next. The pipeline solves this by maintaining a persistent character registry per book. Character descriptions are stored in the database and evolve — when a character's appearance is approved after regeneration, the reference description updates to match. Every image prompt includes the full character context for all characters in that scene, plus reference images from previously approved renders."
