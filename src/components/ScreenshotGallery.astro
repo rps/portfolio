@@ -472,6 +472,12 @@ const { screenshots, device = "phone" } = Astro.props;
     const nextBtn = wrapper?.querySelector(".gallery-nav-next");
 
     if (scrollEl && prevBtn && nextBtn) {
+      function getSkipAmount() {
+        const item = wrapper?.querySelector(".gallery-item") as HTMLElement | null;
+        if (!item) return 200;
+        return item.offsetWidth + 20; // item width + gap (1.25rem)
+      }
+
       function updateNavVisibility() {
         const el = scrollEl as HTMLElement;
         const canScroll = el.scrollWidth > el.clientWidth;
@@ -480,11 +486,11 @@ const { screenshots, device = "phone" } = Astro.props;
       }
 
       prevBtn.addEventListener("click", () => {
-        (scrollEl as HTMLElement).scrollBy({ left: -200, behavior: "smooth" });
+        (scrollEl as HTMLElement).scrollBy({ left: -getSkipAmount(), behavior: "smooth" });
       });
 
       nextBtn.addEventListener("click", () => {
-        (scrollEl as HTMLElement).scrollBy({ left: 200, behavior: "smooth" });
+        (scrollEl as HTMLElement).scrollBy({ left: getSkipAmount(), behavior: "smooth" });
       });
 
       scrollEl.addEventListener("scroll", updateNavVisibility, { passive: true });
