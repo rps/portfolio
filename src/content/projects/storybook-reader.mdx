@@ -25,4 +25,15 @@ A React Native iPad app purpose-built for children with Cerebral Visual Impairme
 
 ## Visual Demo
 
-Screenshots coming soon — the iPad app displays books in landscape with a 55/45 image-text split, page-by-page navigation, and chapter dividers for series.
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="tablet-landscape"
+  screenshots={[
+    { src: "/projects/storybook-reader/library.png", caption: "Book library" },
+    {
+      src: "/projects/storybook-reader/reading-view.png",
+      caption: "55/45 reading view",
+    },
+  ]}
+/>

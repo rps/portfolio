@@ -36,4 +36,23 @@ A Next.js web app that lets writers select multiple Google Docs via the Picker A
 
 ## Visual Demo
 
-"Screenshots coming soon — the app features Google Drive Picker integration, drag-and-drop chapter reordering, and one-click EPUB download."
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="browser"
+  screenshots={[
+    { src: "/projects/docs2kindle/landing.png", caption: "Landing page" },
+    {
+      src: "/projects/docs2kindle/select-documents.png",
+      caption: "Select and reorder documents",
+    },
+    {
+      src: "/projects/docs2kindle/processing.png",
+      caption: "EPUB generation in progress",
+    },
+    {
+      src: "/projects/docs2kindle/download.png",
+      caption: "Download your eBook",
+    },
+  ]}
+/>

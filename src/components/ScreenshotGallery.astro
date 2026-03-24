@@ -6,7 +6,7 @@ interface Screenshot {
 
 interface Props {
   screenshots: Screenshot[];
-  device?: "phone" | "tablet" | "browser";
+  device?: "phone" | "tablet" | "tablet-landscape" | "browser";
 }
 
 const { screenshots, device = "phone" } = Astro.props;
@@ -165,6 +165,26 @@ const { screenshots, device = "phone" } = Astro.props;
     overflow: hidden;
   }
 
+  /* Tablet landscape frame */
+  .device-tablet-landscape {
+    width: 480px;
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .gallery-item:hover .device-tablet-landscape {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .device-tablet-landscape .device-screen {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
   /* Browser frame */
   .device-browser {
     width: 100%;
@@ -251,6 +271,11 @@ const { screenshots, device = "phone" } = Astro.props;
     max-width: 90vw;
   }
 
+  :global(.lightbox .lightbox-device.device-tablet-landscape) {
+    width: 900px;
+    max-width: 95vw;
+  }
+
   :global(.lightbox .lightbox-device.device-browser) {
     width: 900px;
     max-width: 90vw;
@@ -329,6 +354,12 @@ const { screenshots, device = "phone" } = Astro.props;
 
     .device-phone .device-screen {
       border-radius: 18px;
+    }
+
+    .device-tablet-landscape {
+      width: 340px;
+      border-radius: 12px;
+      padding: 8px;
     }
 
     :global(.lightbox .lightbox-device.device-phone) {
