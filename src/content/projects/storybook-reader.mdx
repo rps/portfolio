@@ -15,8 +15,6 @@ keyDecisions:
     description: "Landscape orientation locking and full-screen control are impossible in mobile Safari. A native app was the only way to guarantee the controlled, distraction-free reading environment that CVI accommodation requires."
   - title: "Fixed 55/45 image-text split"
     description: "Not responsive to content length or image aspect ratio. This rigidity is intentional — CVI research shows that consistent, predictable layouts improve comprehension. The reading experience should be identical on every page."
-  - title: "Discriminated union SeriesPage type"
-    description: "Chapter divider pages are interleaved into the flat page array. The renderer checks item.type === 'divider' and branches. This lets the single-book viewer and series viewer share identical FlatList rendering code."
 links:
   betaAccess: true
 ---

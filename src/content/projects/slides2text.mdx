@@ -7,17 +7,10 @@ tags: ["Web"]
 stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Vercel"]
 architecture: "Next.js app → JSZip + xml2js (server) or DOMParser (browser) → docx / EPUB / text output"
 metrics:
-  - "Dual processing paths: server (<4MB) and browser (>4MB)"
+  - "Dual processing paths: server and browser"
   - "3 output formats: plain text, Word, EPUB"
   - "Speaker notes extraction with slide-number filtering"
   - "Zero file storage — in-memory processing only"
-keyDecisions:
-  - title: "Dual processing paths"
-    description: "Files under 4MB process server-side via xml2js. Larger files bypass the server entirely — the browser's native DOMParser parses the PPTX XML, keeping server costs low while handling arbitrarily large files."
-  - title: "XML tree walking over regex"
-    description: "PPTX uses namespaced XML elements (a:r for text runs, a:t for text content). The extractor traverses the parsed tree, collecting paragraphs while skipping animation/timing keys that caused text duplication. A seen Set prevents duplicates within each slide."
-  - title: "SVG noise texture overlay"
-    description: "A 3% opacity feTurbulence SVG filter adds subtle grain to the flat cream background, making it feel slightly tactile and printed rather than purely digital."
 links:
   demo: "https://slides2text-sigma.vercel.app"
 ---
