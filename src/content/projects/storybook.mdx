@@ -25,6 +25,8 @@ metrics:
   - "9 database migrations tracking schema evolution"
   - "Full E2E test suite with Playwright (14 test flows)"
 keyDecisions:
+  - title: "LLM text preprocessing before illustration"
+    description: "Raw story text is preprocessed through GPT-4.1-mini before image generation. The LLM extracts scene boundaries, identifies characters present, and generates detailed visual descriptions — converting narrative prose into structured illustration prompts. This separation ensures the image model receives consistent, visually-oriented instructions rather than raw literary text."
   - title: "Character consistency through context propagation"
     description: "A significant challenge with AI illustration is that each render is independent, so a character can look completely different from one page to the next. The pipeline solves this by maintaining a persistent character registry per book. Character descriptions are stored in the database and evolve — when a character's appearance is approved after regeneration, the reference description updates to match. Every image prompt includes the full character context for all characters in that scene, plus reference images from previously approved renders."
   - title: "Separate API and Worker services"
