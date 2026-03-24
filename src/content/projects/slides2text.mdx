@@ -21,4 +21,14 @@ A Next.js converter that extracts text and speaker notes from PPTX files and out
 
 ## Visual Demo
 
-"Screenshots coming soon — the app features a warm, organic UI with Cabinet Grotesk and Satoshi fonts, a noise-textured cream background, and floating geometric decorations."
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="browser"
+  screenshots={[
+    { src: "/projects/slides2text/1.png", caption: "Landing page" },
+    { src: "/projects/slides2text/2.png", caption: "Upload your presentation" },
+    { src: "/projects/slides2text/3.png", caption: "Choose output format" },
+    { src: "/projects/slides2text/4.png", caption: "Download converted file" },
+  ]}
+/>
