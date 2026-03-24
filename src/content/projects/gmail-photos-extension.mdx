@@ -24,7 +24,8 @@ keyDecisions:
     description: "The Photos Picker API returns a pickerUri that must be opened for the user. Opening it in an iframe was unreliable across browsers. A new Chrome tab is the most robust approach, with a 2-second polling loop to detect completion."
   - title: "Multiple attachment methods with fallback chain"
     description: "Gmail provides no stable API for programmatic file attachment. Four methods are attempted in sequence: hidden file input, injected file input, synthetic paste event, synthetic drag-and-drop. If none work, files are offered for manual download."
-links: {}
+links:
+  betaAccess: true
 ---
 
 ## Description
