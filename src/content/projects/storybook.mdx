@@ -48,4 +48,15 @@ A full-stack AI pipeline that transforms public domain stories into photorealist
 
 ## Visual Demo
 
-Screenshots coming soon — the web viewer displays a library of illustrated books with a page-by-page reader.
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="browser"
+  screenshots={[
+    { src: "/projects/storybook/1.png", caption: "Library view" },
+    { src: "/projects/storybook/2.png", caption: "Book detail" },
+    { src: "/projects/storybook/3.png", caption: "Page reader" },
+    { src: "/projects/storybook/4.png", caption: "Illustration view" },
+    { src: "/projects/storybook/5.png", caption: "Navigation" },
+  ]}
+/>
