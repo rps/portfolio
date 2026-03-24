@@ -1,0 +1,348 @@
+---
+interface Screenshot {
+  src: string;
+  caption: string;
+}
+
+interface Props {
+  screenshots: Screenshot[];
+  device?: "phone" | "tablet" | "browser";
+}
+
+const { screenshots, device = "phone" } = Astro.props;
+---
+
+<div class="not-prose screenshot-gallery">
+  <div class="gallery-scroll">
+    {screenshots.map((shot, i) => (
+      <button class="gallery-item" data-gallery-trigger data-index={i} type="button">
+        <div class={`device-frame device-${device}`}>
+          <div class="device-screen">
+            <img src={shot.src} alt={shot.caption} loading="lazy" />
+          </div>
+        </div>
+        {shot.caption && <p class="gallery-caption">{shot.caption}</p>}
+      </button>
+    ))}
+  </div>
+</div>
+
+<div class="lightbox" id="screenshot-lightbox" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <button class="lightbox-prev" aria-label="Previous screenshot">&#8249;</button>
+  <button class="lightbox-next" aria-label="Next screenshot">&#8250;</button>
+  <div class="lightbox-content">
+    <div class={`device-frame device-${device} lightbox-device`}>
+      <div class="device-screen">
+        <img src="" alt="" id="lightbox-img" />
+      </div>
+    </div>
+    <p class="lightbox-caption" id="lightbox-caption"></p>
+  </div>
+</div>
+
+<style>
+  /* Gallery layout */
+  .screenshot-gallery {
+    margin: 0.5rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .gallery-scroll {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    padding: 0.75rem 0.25rem;
+  }
+
+  .gallery-item {
+    flex-shrink: 0;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .gallery-caption {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    margin-top: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* Phone frame */
+  .device-phone {
+    width: 175px;
+    background: #1a1a1a;
+    border-radius: 28px;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .gallery-item:hover .device-phone {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .device-phone .device-screen {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .device-screen img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Tablet frame */
+  .device-tablet {
+    width: 480px;
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .gallery-item:hover .device-tablet {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .device-tablet .device-screen {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* Browser frame */
+  .device-browser {
+    width: 100%;
+    max-width: 680px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    padding-top: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .device-browser::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff5f57;
+    box-shadow: 20px 0 0 #febc2e, 40px 0 0 #28c840;
+  }
+
+  .gallery-item:hover .device-browser {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .device-browser .device-screen {
+    overflow: hidden;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .lightbox.active {
+    display: flex;
+  }
+
+  .lightbox-content {
+    text-align: center;
+    max-height: 85vh;
+  }
+
+  .lightbox-device.device-phone {
+    width: 280px;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .lightbox-device.device-phone .device-screen {
+    border-radius: 26px;
+  }
+
+  .lightbox-device.device-tablet {
+    width: 680px;
+    max-width: 90vw;
+  }
+
+  .lightbox-device.device-browser {
+    width: 900px;
+    max-width: 90vw;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    color: white;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+    line-height: 1;
+  }
+
+  .lightbox-close:hover {
+    opacity: 1;
+  }
+
+  .lightbox-prev,
+  .lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 3rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+    padding: 1rem;
+    z-index: 1;
+    line-height: 1;
+  }
+
+  .lightbox-prev:hover,
+  .lightbox-next:hover {
+    opacity: 1;
+  }
+
+  .lightbox-prev { left: 0.5rem; }
+  .lightbox-next { right: 0.5rem; }
+
+  .lightbox-caption {
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .gallery-scroll {
+      justify-content: flex-start;
+      padding-left: 0.25rem;
+      padding-right: 1rem;
+    }
+
+    .device-phone {
+      width: 150px;
+      border-radius: 24px;
+      padding: 6px;
+    }
+
+    .device-phone .device-screen {
+      border-radius: 18px;
+    }
+
+    .lightbox-device.device-phone {
+      width: 240px;
+      border-radius: 30px;
+      padding: 8px;
+    }
+
+    .lightbox-device.device-phone .device-screen {
+      border-radius: 22px;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+      font-size: 2rem;
+      padding: 0.5rem;
+    }
+  }
+</style>
+
+<script>
+  function initGallery() {
+    const triggers = document.querySelectorAll("[data-gallery-trigger]");
+    const lightbox = document.getElementById("screenshot-lightbox");
+    const lightboxImg = document.getElementById("lightbox-img") as HTMLImageElement;
+    const lightboxCaption = document.getElementById("lightbox-caption");
+
+    if (!triggers.length || !lightbox || !lightboxImg || !lightboxCaption) return;
+
+    const srcs: string[] = [];
+    const captions: string[] = [];
+    let current = 0;
+
+    triggers.forEach((trigger) => {
+      const img = trigger.querySelector("img") as HTMLImageElement;
+      if (img) {
+        srcs.push(img.src);
+        captions.push(img.alt);
+      }
+    });
+
+    function show(index: number) {
+      current = ((index % srcs.length) + srcs.length) % srcs.length;
+      lightboxImg.src = srcs[current];
+      lightboxImg.alt = captions[current];
+      lightboxCaption!.textContent = captions[current];
+    }
+
+    function open(index: number) {
+      show(index);
+      lightbox!.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+
+    function close() {
+      lightbox!.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    triggers.forEach((trigger, i) => {
+      trigger.addEventListener("click", () => open(i));
+    });
+
+    lightbox.querySelector(".lightbox-close")?.addEventListener("click", close);
+    lightbox.querySelector(".lightbox-prev")?.addEventListener("click", () => show(current - 1));
+    lightbox.querySelector(".lightbox-next")?.addEventListener("click", () => show(current + 1));
+
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox!.classList.contains("active")) return;
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowLeft") show(current - 1);
+      if (e.key === "ArrowRight") show(current + 1);
+    });
+  }
+
+  initGallery();
+</script>

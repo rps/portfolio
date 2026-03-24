@@ -40,7 +40,23 @@ Existing packing apps are either glorified checklists with no intelligence, or r
 
 ## Visual Demo
 
-"Screenshots coming soon — the app features a dark UI with progress rings, animated buttons, and AI-suggested packing themes."
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="phone"
+  screenshots={[
+    { src: "/projects/packwise/themes.png", caption: "Activity themes" },
+    {
+      src: "/projects/packwise/ai-suggestions.png",
+      caption: "AI-powered suggestions",
+    },
+    { src: "/projects/packwise/categories.png", caption: "Category browser" },
+    {
+      src: "/projects/packwise/packing-list.png",
+      caption: "Packing checklist",
+    },
+  ]}
+/>
 
 ## The Solution
 

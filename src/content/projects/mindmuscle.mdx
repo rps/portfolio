@@ -45,7 +45,18 @@ Coaches need a platform that speaks their language — "drills" not "exercises,"
 
 ## Visual Demo
 
-"Screenshots coming soon — the app features coach and athlete views, drill builders, session flows with mood tracking, and program assignment."
+import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
+
+<ScreenshotGallery
+  device="phone"
+  screenshots={[
+    { src: "/projects/mindmuscle/athletes.png", caption: "Coach dashboard" },
+    { src: "/projects/mindmuscle/programs.png", caption: "Program management" },
+    { src: "/projects/mindmuscle/library.png", caption: "Drill library" },
+    { src: "/projects/mindmuscle/today.png", caption: "Daily training" },
+    { src: "/projects/mindmuscle/progress.png", caption: "Progress tracking" },
+  ]}
+/>
 
 ## The Solution
 
