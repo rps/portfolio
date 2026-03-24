@@ -6,7 +6,6 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "hybrid",
   adapter: cloudflare(),
   site: "https://richparrish.dev",
   vite: {
