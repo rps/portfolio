@@ -12,7 +12,7 @@ interface Props {
 const { screenshots, device = "phone" } = Astro.props;
 ---
 
-<div class="not-prose screenshot-gallery-wrapper">
+<div class="not-prose screenshot-gallery-wrapper" data-device={device}>
   <button class="gallery-nav gallery-nav-prev" aria-label="Scroll left">&#8249;</button>
   <button class="gallery-nav gallery-nav-next" aria-label="Scroll right">&#8250;</button>
   <div class="screenshot-gallery">
@@ -341,6 +341,12 @@ const { screenshots, device = "phone" } = Astro.props;
 
   /* Responsive */
   @media (max-width: 768px) {
+    .screenshot-gallery-wrapper[data-device="browser"] .gallery-nav.visible,
+    .screenshot-gallery-wrapper[data-device="tablet-landscape"] .gallery-nav.visible {
+      display: flex;
+      opacity: 0.7;
+    }
+
     .gallery-scroll {
       justify-content: flex-start;
       padding-left: 0.25rem;
