@@ -30,20 +30,10 @@ links:
   betaAccess: true
 ---
 
-## The Problem
+## Description
 
-The Storybook Library web viewer works, but children with CVI need a controlled, distraction-free reading environment. A tablet held in landscape provides a larger image at closer range — critical for CVI accommodation. Web browsers introduce toolbars, tabs, and navigation chrome that create visual noise.
-
-Parents and therapists need an app they can hand to a child without worrying about accidental navigation, browser UI distractions, or inconsistent rendering across devices.
+A React Native iPad app purpose-built for children with Cerebral Visual Impairment (CVI), enforcing a fixed 55/45 landscape image-text split for predictable, distraction-free reading. A custom Expo config plugin locks iOS orientation, and a discriminated union page type lets single-book and series viewers share identical FlatList rendering. Connects to the Storybook Library API on Fly.io with content served from Supabase and Cloudflare R2.
 
 ## Visual Demo
 
 Screenshots coming soon — the iPad app displays books in landscape with a 55/45 image-text split, page-by-page navigation, and chapter dividers for series.
-
-## The Solution
-
-Locking an iPad to landscape sounds trivial — Expo provides an `orientation: landscape` config option — but individual view controllers can override it, and several system-presented controllers do exactly that. The fix is a custom Expo config plugin that patches `AppDelegate.swift` at build time, injecting a `UIInterfaceOrientationMask` override at the UIApplication level. This forces landscape regardless of what any child view controller requests. The page reader itself is a horizontal FlatList with `pagingEnabled` and a pre-computed `getItemLayout` function that returns exact offsets for any index without measuring — giving O(1) scroll-to-index and jank-free page snapping. Each page enforces a fixed 55% image / 45% text column split. Text that exceeds the column height scrolls within its container. The `onViewableItemsChanged` callback and its companion viewability config object are wrapped in `useRef` to prevent re-creation on render, which is a hard requirement of React Native's FlatList — passing a new function reference causes the component to silently drop the callback entirely.
-
-Series support transforms the data model from a flat list of pages into an interleaved sequence of content pages and chapter dividers. The `toSeriesPages` function walks the chapter list and inserts `ChapterDividerPage` objects at each boundary, producing a single flat array typed as a discriminated union — `item.type === 'divider'` branches to a full-screen chapter title card, while `item.type === 'page'` renders the standard image-text layout. This means the single-book viewer and the series viewer share identical FlatList rendering code with no conditional logic at the list level. A "Next Chapter" button appears contextually on the last page of each non-final chapter. Chapter boundaries are pre-computed during the transform, and the progress dots at the bottom of the screen include chapter separator indicators so readers always know where they are in the larger work.
-
-The API client handles the surprisingly tricky problem of connecting to a development server from three different environments. Android emulators route `10.0.2.2` to the host machine's loopback interface, iOS simulators use `localhost` directly, and production builds hit the Fly.io deployment. An environment-aware base URL selector detects the current platform and build profile at startup, choosing the correct address without any manual configuration. This keeps the development loop fast — a single `expo start` command works regardless of which simulator or device is connected.

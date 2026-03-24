@@ -205,7 +205,7 @@ const { screenshots, device = "phone" } = Astro.props;
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(240, 237, 232, 0.92);
+    background: rgba(30, 28, 25, 0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     align-items: center;
@@ -232,7 +232,7 @@ const { screenshots, device = "phone" } = Astro.props;
     width: auto;
     border-radius: 36px;
     padding: 10px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
   }
 
   :global(.lightbox .lightbox-device.device-phone .device-screen) {
@@ -241,7 +241,7 @@ const { screenshots, device = "phone" } = Astro.props;
   }
 
   :global(.lightbox .lightbox-device .device-screen img) {
-    max-height: 50vh;
+    max-height: 75vh;
     width: auto;
     display: block;
   }
@@ -260,7 +260,7 @@ const { screenshots, device = "phone" } = Astro.props;
     position: absolute;
     top: 1rem;
     right: 1.5rem;
-    color: var(--color-ink);
+    color: rgba(255, 255, 255, 0.7);
     font-size: 2rem;
     background: none;
     border: none;
@@ -281,12 +281,12 @@ const { screenshots, device = "phone" } = Astro.props;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-ink);
+    color: rgba(255, 255, 255, 0.7);
     font-size: 3rem;
     background: none;
     border: none;
     cursor: pointer;
-    opacity: 0.3;
+    opacity: 0.5;
     transition: opacity 0.15s;
     padding: 1rem;
     z-index: 1;
@@ -302,7 +302,7 @@ const { screenshots, device = "phone" } = Astro.props;
   :global(.lightbox .lightbox-next) { right: 0.5rem; }
 
   :global(.lightbox .lightbox-caption) {
-    color: var(--color-ink-light);
+    color: rgba(255, 255, 255, 0.6);
     margin-top: 1rem;
     font-size: 0.85rem;
     font-weight: 500;
@@ -336,7 +336,7 @@ const { screenshots, device = "phone" } = Astro.props;
     }
 
     :global(.lightbox .lightbox-device .device-screen img) {
-      max-height: 45vh;
+      max-height: 65vh;
     }
 
     :global(.lightbox .lightbox-prev),

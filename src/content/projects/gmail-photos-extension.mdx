@@ -27,20 +27,10 @@ keyDecisions:
 links: {}
 ---
 
-## The Problem
+## Description
 
-Attaching photos from Google Photos to a Gmail email requires downloading them to your device first, then uploading them as attachments. For multiple photos, this is tedious and wastes local storage. Google hasn't integrated Photos into Gmail's attachment flow despite owning both products.
-
-The old Google Photos Library API was deprecated on March 31, 2025, breaking every extension that relied on it. The replacement — the Photos Picker API — uses a fundamentally different session-based model that most extensions haven't adapted to.
+A Chrome Manifest V3 extension that injects a Google Photos picker button into Gmail's compose toolbar, letting users attach photos without downloading them first. Built on the post-deprecation Photos Picker API with a 4-method attachment injection fallback chain (hidden input, injected input, synthetic paste, synthetic drag-and-drop). Uses ARIA-based DOM selectors for resilience against Gmail's frequent class-name changes.
 
 ## Visual Demo
 
 "Screenshots coming soon — the extension adds a 'Photos' button to Gmail's compose toolbar, styled to match Gmail's native aesthetic."
-
-## The Solution
-
-The extension uses a MutationObserver on `document.documentElement` to watch for Gmail compose windows, identified by `div[role="dialog"]` selectors. When a compose window appears, a styled "Photos" button is injected into the toolbar alongside Gmail's native formatting controls. The injection is idempotent — it checks for existing buttons before adding a new one, preventing duplicates when Gmail recycles compose DOM elements. The button itself is styled to match Gmail's native aesthetic: matching border color, border radius, and font family so it looks like a first-party feature rather than an extension bolt-on. ARIA attributes and `role`-based selectors are used throughout instead of Gmail's internal class names, which change without notice during Gmail's frequent silent updates.
-
-Clicking the Photos button triggers the session-based Photos Picker API flow. The extension creates a picker session via a POST request to Google's API, which returns a `pickerUri` — a URL where the user can browse and select photos. This URI opens in a new Chrome tab rather than an iframe, a decision driven by cross-browser reliability issues with iframe embedding. A polling loop checks the session status every 2 seconds for up to 3 minutes, waiting for the user to finish selecting. Once the session completes, the extension fetches the selected media items and downloads each photo at 1920px width rather than full resolution, keeping email attachment sizes manageable. Limits are enforced at 10 photos, 5MB per photo, and 20MB total. The service worker handles base64 conversion of the downloaded images before passing them to the content script for attachment.
-
-Attachment injection is the hardest problem in the extension because Gmail provides no stable API for programmatically attaching files. Four methods are attempted in sequence as a fallback chain. The first method locates Gmail's hidden `input[type="file"]` element and sets its files via a DataTransfer object. If that element isn't found or the change event doesn't trigger, the second method injects a fresh file input into the compose DOM. The third method synthesizes a ClipboardEvent paste with the file data. The fourth method synthesizes a full drag-and-drop sequence — `dragenter`, `dragover`, then `drop` — targeting the compose body. After each attempt, the extension waits 2 seconds and checks for the appearance of an attachment chip in the compose window to determine success. If all four methods fail, the extension falls back to offering the photos as manual downloads so the user's selection is never lost. Manifest V3 constraints add another layer of complexity: the service worker is killed after roughly 30 seconds of inactivity, losing any cached OAuth token. The extension relies on `chrome.identity.getAuthToken` for silent re-authentication, and communication between the picker page and the content script uses `postMessage` with strict source validation to prevent message spoofing.

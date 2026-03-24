@@ -111,6 +111,21 @@ const tagColors: Record<string, string> = {
       <Content />
     </div>
 
+    <!-- Key Decisions -->
+    {keyDecisions.length > 0 && (
+      <section class="mt-12 fade-in-section">
+        <h2 class="text-xl font-semibold text-ink pb-2 border-b border-border mb-4">Key Technical Decisions</h2>
+        <div class="space-y-4">
+          {keyDecisions.map((decision: { title: string; description: string }) => (
+            <div class="bg-white rounded-xl border border-border p-5">
+              <h3 class="font-medium text-ink text-sm">{decision.title}</h3>
+              <p class="mt-1 text-sm text-ink-muted">{decision.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
     <!-- Architecture -->
     <section class="mt-12 fade-in-section">
       <h2 class="text-xl font-semibold text-ink pb-2 border-b border-border mb-4">Architecture</h2>
@@ -139,21 +154,6 @@ const tagColors: Record<string, string> = {
           {metrics.map((metric: string) => (
             <div class="bg-white rounded-xl border border-border p-4">
               <p class="text-sm text-ink-light">{metric}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
-
-    <!-- Key Decisions -->
-    {keyDecisions.length > 0 && (
-      <section class="mt-12 fade-in-section">
-        <h2 class="text-xl font-semibold text-ink pb-2 border-b border-border mb-4">Key Technical Decisions</h2>
-        <div class="space-y-4">
-          {keyDecisions.map((decision: { title: string; description: string }) => (
-            <div class="bg-white rounded-xl border border-border p-5">
-              <h3 class="font-medium text-ink text-sm">{decision.title}</h3>
-              <p class="mt-1 text-sm text-ink-muted">{decision.description}</p>
             </div>
           ))}
         </div>

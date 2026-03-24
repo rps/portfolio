@@ -32,20 +32,10 @@ links:
   demo: "https://slides2text-sigma.vercel.app"
 ---
 
-## The Problem
+## Description
 
-Slide decks are terrible for reading. Content is fragmented across slides, speaker notes are hidden, and there's no way to search or read through a presentation linearly. Students reviewing lecture slides, professionals referencing conference talks, and accessibility users all need the content in a readable format.
-
-Existing conversion tools either strip all formatting, lose speaker notes entirely, or require uploading files to opaque third-party servers. Privacy-conscious users — especially in corporate environments — need a tool that processes files without storing them.
+A Next.js converter that extracts text and speaker notes from PPTX files and outputs plain text, Word (.docx), or EPUB. Uses dual processing paths — server-side xml2js for files under 4MB, browser-native DOMParser for larger files — with zero file storage. XML tree walking with namespace-aware traversal handles PPTX's a:r/a:t elements while deduplicating animation-induced repeats.
 
 ## Visual Demo
 
 "Screenshots coming soon — the app features a warm, organic UI with Cabinet Grotesk and Satoshi fonts, a noise-textured cream background, and floating geometric decorations."
-
-## The Solution
-
-A PPTX file is a ZIP archive containing namespaced XML, and the app exploits this structure through two distinct processing paths determined by file size. Files under 4MB are uploaded to the server, where JSZip extracts the archive and xml2js parses each slide's XML into a traversable tree. The extractor walks the tree collecting text runs (`a:r` elements) by joining their `a:t` children into paragraphs, deliberately skipping animation and timing keys that would otherwise cause text duplication — a problem discovered during testing when animated slides produced three copies of every line. A `seen` Set tracks extracted strings within each slide to catch any remaining duplicates. Files over 4MB bypass the server entirely: the browser reads the file locally, JSZip extracts the XML in the browser's heap, and the native DOMParser handles parsing via `getElementsByTagName("a:t")`. A badge in the UI indicates which processing mode was used, making the behavior transparent to the user. Slides are sorted numerically by their filename index rather than lexicographically, preventing the classic problem where `slide10.xml` sorts before `slide2.xml`.
-
-Speaker notes live in separate `notesSlide{N}.xml` files within the PPTX archive. The extraction pipeline pulls these alongside their parent slides, but the raw text contains noise — pure numeric strings that are actually slide numbers leaking through as text nodes. The extractor filters these out by detecting strings that consist entirely of digits. In the DOCX output, notes render as italic gray text beneath each slide's content, visually distinct but still searchable. In the EPUB output, notes are wrapped in styled `<div class="notes">` elements with matching typography. Plain text output separates slides with dash dividers and prefixes bullet points, producing a format that reads cleanly in any text editor.
-
-The three output formats each take a different code path after extraction. Plain text is the simplest — bullet prefixes, dash separators between slides, and UTF-8 encoding. DOCX generation uses the `docx` package to produce proper Word documents with heading levels mapped from slide titles and styled paragraph runs for notes. EPUB output follows the same hand-assembled approach as Docs2Kindle, with JSZip constructing the archive — `mimetype` uncompressed first, then the XHTML chapter files, OPF manifest, and NCX table of contents. Privacy is maintained throughout: the server path holds everything in serverless function memory with no disk writes, the client path operates entirely in the browser's heap, and output blobs are cleaned up with `URL.revokeObjectURL()` after download to prevent memory leaks.

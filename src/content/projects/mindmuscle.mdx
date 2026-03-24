@@ -37,11 +37,9 @@ links:
   betaAccess: true
 ---
 
-## The Problem
+## Description
 
-Mental performance coaching follows the same infrastructure pattern as fitness coaching — users, programs, sessions, completions — but the terminology, categories, and interaction types are completely different. Building separate apps for each coaching domain is wasteful. Building one heavily-branched app is unmaintainable.
-
-Coaches need a platform that speaks their language — "drills" not "exercises," "mental muscles" not "muscle groups" — while sharing the same underlying scheduling, tracking, and relationship management infrastructure.
+A React Native coaching platform built on a domain-plugin architecture where the entire content taxonomy — terminology, categories, drills, metadata schemas — is swappable via a single config file. Ships with 13 sport psychology drills and 3 periodized programs, backed by Firebase Auth, Cloud Firestore, and Zustand with full offline support. Adding a new coaching domain (e.g. weightlifting, academic tutoring) requires zero changes to core infrastructure.
 
 ## Visual Demo
 
@@ -57,13 +55,3 @@ import ScreenshotGallery from "../../components/ScreenshotGallery.astro";
     { src: "/projects/mindmuscle/progress.png", caption: "Progress tracking" },
   ]}
 />
-
-## The Solution
-
-The core architectural bet is the domain-plugin system. A `DomainConfig` interface defines the entire contract: swappable labels (`activityLabel` becomes "Drill" instead of "Exercise," `categoryLabel` becomes "Mental Muscle" instead of "Muscle Group"), rating dimensions, metadata schemas, and theme colors. The mental training domain implements Dr. Jim Taylor's sport psychology model, organizing content around 6 Mental Muscles (motivation, confidence, intensity, focus, emotions, imagery) and 6 Mental Skills that develop them. Every screen, form label, filter option, and analytics grouping reads from this config rather than hardcoding terminology. The result is that adding a completely new coaching domain — weightlifting, academic tutoring, corporate leadership — requires writing a single config file and populating its content library. Zero changes to navigation, state management, scheduling, or UI components.
-
-Drill completion is where the domain model meets interaction design. Three completion types handle fundamentally different training modalities. `mark_complete` serves journaling-style drills where the athlete reads a prompt, reflects, and taps done. `timer` drives timed visualization exercises — a 5-minute Confidence Visualization drill starts a countdown, plays a subtle haptic at the halfway mark, and logs the completion duration. `guided_steps` powers auto-advancing sequences like Box Breathing: 4 seconds inhale, 4 seconds hold, 4 seconds exhale, 4 seconds hold, repeated for 4 cycles. Each step transition triggers a Reanimated spring animation on the instruction text and a progress bar that fills across the full sequence. The completion type is metadata on the drill definition, so coaches can create new drills with any interaction pattern without touching code.
-
-Session flow follows a strict state machine: `not_started`, `pre_mood`, `drills`, `post_mood`, `complete`. Pre- and post-mood checks capture 1-5 ratings on configurable dimensions, creating a before/after signal that coaches use to evaluate drill effectiveness over time. Programs use a 4-level hierarchy — Program contains Phases, Phases contain Days, Days contain Activities — with automatic cycling that eliminates the "I finished the program, now what?" dead end. The cycling logic computes `dayIndex = daysSinceStart % totalDays`, so a 7-day program restarts seamlessly on day 8. Sessions themselves are intentionally never persisted to Zustand. They are always freshly computed from the assignment start date and the current date, which means there is no stale session state to debug, no migration path to maintain, and the app produces the correct session even if the user hasn't opened it in weeks.
-
-Zustand store architecture uses selective persistence to keep each store's footprint minimal. The `appStore` persists only 3 fields — user profile, selected role, and onboarding status — while everything else rehydrates from Firestore on launch. The `drillStore` keeps builder state entirely ephemeral so a half-finished drill form never pollutes persisted state. The `sessionStore` is non-persisted by design, as described above. Demo mode gates every Firestore write behind a `DEMO_MODE` flag, allowing the full app experience with synthetic data and zero backend dependency. The custom Zustand merge function makes this work: on every hydration, it filters user-created content from demo IDs, then re-injects the latest demo programs and assignments, ensuring the demo experience stays fresh even as the user modifies their local state. Coach and athlete experiences live in separate Expo Router tab groups — `(coach)` and `(athlete)` — with file-based routing providing clean separation. A `Relationship` model links coaches to athletes through invite codes with status tracking (`pending`, `active`, `revoked`), and coaches see aggregated completion and mood data across their roster without accessing individual session details.

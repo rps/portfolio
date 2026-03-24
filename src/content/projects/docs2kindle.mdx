@@ -1,0 +1,40 @@
+---
+title: "Docs2Kindle"
+tagline: "Combine Google Docs into a single Kindle-ready EPUB"
+order: 6
+icon: "📚"
+tags: ["Web"]
+stack:
+  [
+    "Next.js 14",
+    "React 18",
+    "TypeScript",
+    "Google Drive API",
+    "Google Picker API",
+    "Tailwind CSS",
+    "Resend",
+    "Vercel",
+  ]
+architecture: "Next.js app → Google Drive API (OAuth + Picker) → Server-side EPUB assembly → Resend (beta access emails)"
+metrics:
+  - "Hand-rolled EPUB 3.0 assembler with pure-JS CRC-32"
+  - "Zero file storage — entire pipeline runs in serverless function memory"
+  - "Deploy-anywhere: Vercel, Railway, Render, Docker"
+keyDecisions:
+  - title: "HTML export over plain text"
+    description: "Documents are exported from Google Drive as HTML, not plain text. This preserves structural markup (headings, bold, paragraphs) that gets embedded directly into the EPUB chapter XHTML."
+  - title: "Hand-rolled ZIP/EPUB over npm library"
+    description: "epub-gen and similar packages had compatibility issues with Vercel's serverless environment. The hand-rolled approach constructs ZIP binary format manually — local file headers, CRC-32 checksums, central directory — with the mimetype file stored uncompressed per EPUB 3.0 spec."
+  - title: "Google OAuth Testing mode as beta gate"
+    description: "While the OAuth app is in Testing mode, only whitelisted emails can sign in. A Resend-powered email form sends access requests tagged [Gmail] vs [Non-Gmail] for quick triage. No custom auth system needed."
+links:
+  demo: "https://docs2kindle.vercel.app"
+---
+
+## Description
+
+A Next.js web app that lets writers select multiple Google Docs via the Picker API, reorder them as chapters, and download a single Kindle-ready EPUB. The EPUB is assembled server-side with a hand-rolled ZIP builder (manual binary headers, CRC-32 checksums, uncompressed mimetype per EPUB 3.0 spec) running entirely in Vercel serverless function memory with zero file storage.
+
+## Visual Demo
+
+"Screenshots coming soon — the app features Google Drive Picker integration, drag-and-drop chapter reordering, and one-click EPUB download."
