@@ -301,6 +301,11 @@ const { screenshots, device = "phone" } = Astro.props;
   :global(.lightbox .lightbox-prev) { left: 0.5rem; }
   :global(.lightbox .lightbox-next) { right: 0.5rem; }
 
+  :global(.lightbox .lightbox-prev.hidden),
+  :global(.lightbox .lightbox-next.hidden) {
+    display: none;
+  }
+
   :global(.lightbox .lightbox-caption) {
     color: var(--color-ink-light);
     margin-top: 1rem;
@@ -372,10 +377,13 @@ const { screenshots, device = "phone" } = Astro.props;
     });
 
     function show(index: number) {
-      current = ((index % srcs.length) + srcs.length) % srcs.length;
+      if (index < 0 || index >= srcs.length) return;
+      current = index;
       lightboxImg.src = srcs[current];
       lightboxImg.alt = captions[current];
       lightboxCaption!.textContent = captions[current];
+      lightbox!.querySelector(".lightbox-prev")?.classList.toggle("hidden", current === 0);
+      lightbox!.querySelector(".lightbox-next")?.classList.toggle("hidden", current === srcs.length - 1);
     }
 
     function open(index: number) {
