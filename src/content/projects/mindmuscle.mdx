@@ -24,7 +24,7 @@ metrics:
   - "Full offline support via Firestore persistence + demo mode"
 keyDecisions:
   - title: "Domain-plugin architecture"
-    description: "The entire content taxonomy — terminology, categories, methods, metadata schemas, rating dimensions — is swappable via a single config file. Adding 'weightlifting' or 'academic tutoring' requires zero changes to core infrastructure."
+    description: "The entire content taxonomy — terminology, categories, methods, metadata schemas, rating dimensions — is swappable via a single config file. Adding 'nutrition' or 'academic tutoring' requires zero changes to core infrastructure."
   - title: "Session store intentionally non-persisted"
     description: "Sessions are always freshly computed from assignment start date and current date. A 7-day program cycles automatically (dayIndex = daysSinceStart % allDays.length). Athletes never run out of content, and stale state is impossible."
   - title: "Dual Firebase SDK"
@@ -37,7 +37,7 @@ links:
 
 ## Description
 
-A React Native coaching platform built on a domain-plugin architecture where the entire content taxonomy — terminology, categories, drills, metadata schemas — is swappable via a single config file. Ships with 13 sport psychology drills and 3 periodized programs, backed by Firebase Auth, Cloud Firestore, and Zustand with full offline support. Adding a new coaching domain (e.g. weightlifting, academic tutoring) requires zero changes to core infrastructure.
+A React Native coaching platform built on a domain-plugin architecture where the entire content taxonomy — terminology, categories, drills, metadata schemas — is swappable via a single config file. Ships with 13 sport psychology drills and 3 periodized programs, backed by Firebase Auth, Cloud Firestore, and Zustand with full offline support. Adding a new coaching domain (e.g. nutrition, academic tutoring) requires zero changes to core infrastructure.
 
 ## Visual Demo
 

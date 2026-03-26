@@ -44,7 +44,9 @@ links:
 
 ## Description
 
-A full-stack AI pipeline that transforms public domain stories into photorealistically illustrated children's books for readers with Cerebral Visual Impairment. A Hono/TypeScript API on Fly.io orchestrates OpenAI GPT-4.1-mini for text segmentation and GPT-image-1-mini for image generation, with Upstash Redis job queuing, Supabase persistence, and Cloudflare R2 storage. The deployed API is read-only — the AI worker runs locally for cost control.
+Cortical Visual Impairment (CVI) is a visual processing disability where brain can process realistic photos much easier than illustrations, and is the leading cause of visual impairments in the US. Children with CVI have an inability to process abstract shapes like drawings and cartoons into meaningful object associations, making it difficult to learn how to read and limiting their ability to thrive. Storybook Library solves this by generating photorealistic images from literature, with limited characters on a pure black background.
+
+This is achieved as a multi-step process that involves: parsing the text with an LLM to identify characters, clothing, scenes and themes, rendering these photo-realistically using an AI image model, monitoring and adjusting prompts for safety, and maintaining character consistency and continuity from scene to scene using a database record. Storybook Library is primarily an ai-pipeline + admin panel allowing for book generation and image editing, but also includes a lightweight web ui for book previews. It is best used with the corresponding Storybook Reader app for iPad.
 
 ## Visual Demo
 
