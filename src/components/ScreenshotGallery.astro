@@ -2,6 +2,7 @@
 interface Screenshot {
   src: string;
   caption: string;
+  video?: boolean;
 }
 
 interface Props {
@@ -10,6 +11,10 @@ interface Props {
 }
 
 const { screenshots, device = "phone" } = Astro.props;
+
+function isVideo(shot: Screenshot): boolean {
+  return shot.video || shot.src.endsWith('.mp4') || shot.src.endsWith('.webm');
+}
 ---
 
 <div class="not-prose screenshot-gallery-wrapper" data-device={device}>
@@ -18,10 +23,19 @@ const { screenshots, device = "phone" } = Astro.props;
   <div class="screenshot-gallery">
     <div class="gallery-scroll">
       {screenshots.map((shot, i) => (
-        <button class="gallery-item" data-gallery-trigger data-index={i} type="button">
+        <button class="gallery-item" data-gallery-trigger data-index={i} data-video={isVideo(shot) ? "true" : undefined} type="button">
           <div class={`device-frame device-${device}`}>
             <div class="device-screen">
-              <img src={shot.src} alt={shot.caption} loading="lazy" />
+              {isVideo(shot) ? (
+                <div class="video-wrapper">
+                  <video src={shot.src} muted loop playsinline preload="metadata" data-src={shot.src} data-caption={shot.caption}></video>
+                  <div class="video-play-overlay">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+              ) : (
+                <img src={shot.src} alt={shot.caption} loading="lazy" />
+              )}
             </div>
           </div>
           {shot.caption && <p class="gallery-caption">{shot.caption}</p>}
@@ -39,6 +53,7 @@ const { screenshots, device = "phone" } = Astro.props;
     <div class={`device-frame device-${device} lightbox-device`}>
       <div class="device-screen">
         <img src="" alt="" id="lightbox-img" />
+        <video src="" id="lightbox-video" muted loop playsinline controls style="display:none"></video>
       </div>
     </div>
     <p class="lightbox-caption" id="lightbox-caption"></p>
@@ -141,10 +156,44 @@ const { screenshots, device = "phone" } = Astro.props;
     overflow: hidden;
   }
 
-  .device-screen img {
+  .device-screen img,
+  .device-screen video {
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  .device-browser .device-screen video {
+    height: 270px;
+    object-fit: cover;
+    object-position: center calc(50% - 10px);
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .video-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background 0.2s;
+  }
+
+  .video-play-overlay svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  .gallery-item:hover .video-play-overlay {
+    background: rgba(0, 0, 0, 0.4);
   }
 
   /* Tablet frame */
@@ -267,6 +316,14 @@ const { screenshots, device = "phone" } = Astro.props;
     display: block;
   }
 
+  :global(.lightbox .lightbox-device .device-screen video) {
+    height: 70vh !important;
+    width: auto !important;
+    display: block;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+
   :global(.lightbox .lightbox-device.device-tablet) {
     width: 680px;
     max-width: 90vw;
@@ -280,6 +337,16 @@ const { screenshots, device = "phone" } = Astro.props;
   :global(.lightbox .lightbox-device.device-browser) {
     width: 900px;
     max-width: 90vw;
+  }
+
+  :global(.lightbox .lightbox-device.device-browser.has-video) {
+    width: auto;
+    max-width: 90vw;
+  }
+
+  :global(.lightbox .lightbox-device.device-browser.has-video .device-screen) {
+    display: flex;
+    justify-content: center;
   }
 
   :global(.lightbox .lightbox-close) {
@@ -395,6 +462,7 @@ const { screenshots, device = "phone" } = Astro.props;
     const triggers = document.querySelectorAll("[data-gallery-trigger]");
     const lightbox = document.getElementById("screenshot-lightbox");
     const lightboxImg = document.getElementById("lightbox-img") as HTMLImageElement;
+    const lightboxVideo = document.getElementById("lightbox-video") as HTMLVideoElement;
     const lightboxCaption = document.getElementById("lightbox-caption");
 
     if (!triggers.length || !lightbox || !lightboxImg || !lightboxCaption) return;
@@ -404,21 +472,48 @@ const { screenshots, device = "phone" } = Astro.props;
 
     const srcs: string[] = [];
     const captions: string[] = [];
+    const isVideoItem: boolean[] = [];
     let current = 0;
 
     triggers.forEach((trigger) => {
-      const img = trigger.querySelector("img") as HTMLImageElement;
-      if (img) {
-        srcs.push(img.src);
-        captions.push(img.alt);
+      const isVideo = trigger.getAttribute("data-video") === "true";
+      isVideoItem.push(isVideo);
+      if (isVideo) {
+        const video = trigger.querySelector("video") as HTMLVideoElement;
+        if (video) {
+          srcs.push(video.getAttribute("data-src") || video.src);
+          captions.push(video.getAttribute("data-caption") || "");
+        }
+      } else {
+        const img = trigger.querySelector("img") as HTMLImageElement;
+        if (img) {
+          srcs.push(img.src);
+          captions.push(img.alt);
+        }
       }
     });
 
     function show(index: number) {
       if (index < 0 || index >= srcs.length) return;
       current = index;
-      lightboxImg.src = srcs[current];
-      lightboxImg.alt = captions[current];
+
+      const deviceFrame = lightbox!.querySelector(".lightbox-device");
+
+      if (isVideoItem[current]) {
+        lightboxImg.style.display = "none";
+        lightboxVideo.style.display = "block";
+        lightboxVideo.src = srcs[current];
+        lightboxVideo.play();
+        deviceFrame?.classList.add("has-video");
+      } else {
+        lightboxVideo.style.display = "none";
+        lightboxVideo.pause();
+        lightboxImg.style.display = "block";
+        lightboxImg.src = srcs[current];
+        lightboxImg.alt = captions[current];
+        deviceFrame?.classList.remove("has-video");
+      }
+
       lightboxCaption!.textContent = captions[current];
       lightbox!.querySelector(".lightbox-prev")?.classList.toggle("hidden", current === 0);
       lightbox!.querySelector(".lightbox-next")?.classList.toggle("hidden", current === srcs.length - 1);
@@ -433,6 +528,9 @@ const { screenshots, device = "phone" } = Astro.props;
     function close() {
       lightbox!.classList.remove("active");
       document.body.style.overflow = "";
+      if (lightboxVideo) {
+        lightboxVideo.pause();
+      }
     }
 
     triggers.forEach((trigger, i) => {

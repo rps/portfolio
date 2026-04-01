@@ -19,6 +19,7 @@ const tagColors = {
   'Extension': 'bg-tag-extension-bg text-tag-extension',
   'AI': 'bg-tag-ai-bg text-tag-ai',
   'Tablet': 'bg-tag-tablet-bg text-tag-tablet',
+  'Enterprise': 'bg-tag-enterprise-bg text-tag-enterprise',
 } as const;
 
 function getTagColor(tag: string): string {
@@ -70,7 +71,7 @@ function getTagColor(tag: string): string {
               <img src={project.data.thumbnail} alt={project.data.title} class="w-full h-full object-cover" />
             ) : (
               <div class="text-center p-6">
-                <img src={`/projects/${project.id}/icon.webp`} alt={project.data.title} class="w-16 h-16 rounded-2xl mx-auto" onerror="this.style.display='none';this.nextElementSibling.style.display=''" />
+                <img src={`/projects/${project.id}/icon.webp`} alt={project.data.title} class={`${project.data.tags.includes('Enterprise') ? 'w-14 h-14' : 'w-16 h-16'} rounded-2xl mx-auto`} onerror="this.style.display='none';this.nextElementSibling.style.display=''" />
                 <div class="text-4xl mb-2" style="display:none">{project.data.icon}</div>
                 <p class="text-sm text-ink-muted font-medium mt-2">{project.data.title}</p>
               </div>
