@@ -24,3 +24,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# claude code local state (skills/ is meant to be committed)
+.claude/worktrees/
+.claude/settings.local.json
+
+# resume workspace lives in ../resume (private repo)
+res-data/
