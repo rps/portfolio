@@ -10,28 +10,33 @@ stack:
     "Hono",
     "Supabase",
     "Upstash Redis",
-    "GPT 4.1-mini",
-    "GPT image-1-mini",
-    "GPT image-1.5",
-    "Gemini 3.1-flash",
+    "GPT-6 Luna",
+    "GPT image-2.5 (Sunburst, Flare)",
+    "Gemini Nano Banana 2.1",
     "Gemini 3-pro",
     "Cloudflare R2",
     "Fly.io",
     "Vercel",
     "Playwright",
   ]
-architecture: "Frontend (Vercel, static HTML) → API (Fly.io, Hono/TypeScript) → Supabase (Postgres) + Upstash Redis (job queue) → Worker (Fly.io) → OpenAI API + Cloudflare R2"
+architecture: "Frontend (Vercel, static HTML) → API (Fly.io, Hono/TypeScript) → Supabase (Postgres) + Upstash Redis (job queue) → Worker (Fly.io) → OpenAI + Gemini APIs + Cloudflare R2"
 metrics:
   - "15+ fairy tales catalogued across 2 public domain collections"
   - "4 classic novels with chapter-by-chapter processing plans"
-  - "3-attempt safety fallback with semantic prompt escalation"
-  - "9 database migrations tracking schema evolution"
-  - "Full E2E test suite with Playwright (14 test flows)"
+  - "3-attempt safety fallback (rewrite → reimagine) across OpenAI and Gemini"
+  - "Head-to-head evaluation of 3 image models on a 34-page book with measured per-image cost"
+  - "Full E2E test suite with Playwright (29 specs, 154 tests)"
 keyDecisions:
   - title: "LLM text preprocessing before illustration"
-    description: "Raw story text is preprocessed through GPT-4.1-mini before image generation. The LLM extracts scene boundaries, identifies characters present, and generates detailed visual descriptions — converting narrative prose into structured illustration prompts. This separation ensures the image model receives consistent, visually-oriented instructions rather than raw literary text."
+    description: "Raw story text is preprocessed through GPT-6 Luna before image generation. The LLM extracts scene boundaries, identifies characters present, and generates detailed visual descriptions — converting narrative prose into structured illustration prompts. This separation ensures the image model receives consistent, visually-oriented instructions rather than raw literary text."
   - title: "Character consistency through context propagation"
     description: "A significant challenge with AI illustration is that each render is independent, so a character can look completely different from one page to the next. The pipeline solves this by maintaining a persistent character registry per book. Character descriptions are stored in the database and evolve — when a character's appearance is approved after regeneration, the reference description updates to match. Every image prompt includes the full character context for all characters in that scene, plus reference images from previously approved renders."
+  - title: "Measured model evaluation over spec-sheet pricing"
+    description: "When OpenAI scheduled its image models for retirement, the same 34-page book was generated on three candidates (GPT image-2.5 Flare, Sunburst, and Gemini Nano Banana 2.1) and compared on cost, character consistency, and safety-filter behavior. Token usage was measured from live API calls rather than estimated: the nominally 'cheaper per token' model used far fewer tokens per image, and reference images, not output, turned out to dominate cost. Sunburst won on character consistency at the same price as Flare."
+  - title: "Provider-agnostic safety recovery"
+    description: "OpenAI rejects unsafe prompts with an HTTP 400, while Gemini returns a successful response with no image and a PROHIBITED_CONTENT finish reason. The worker normalizes both into one safety signal, so every provider shares the same recovery chain: an LLM rewrites the prompt, then reimagines the scene from a different angle, before a page is marked failed."
+  - title: "Deprecation-proof model remapping"
+    description: "Retired models are swapped at generation time, within the same provider, rather than by rewriting stored data. Each book keeps a record of the model that produced its existing pages, while new pages and regenerations use the current model. Regeneration also uses the book's own model and quality, so replacement pages match the lighting and style of the rest of the book."
   - title: "Separate API and Worker services"
     description: "Cost control pattern — the deployed API is intentionally read-only. The AI pipeline runs locally where costs can be monitored. The public endpoint only serves pre-processed content."
   - title: "Upstash Redis polling with sorted-set delayed jobs"
