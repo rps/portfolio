@@ -17,13 +17,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </a>
     </div>
 
-    <!-- Google Drive PDF Embed -->
-    <iframe
-      src="https://drive.google.com/file/d/1dB7SzhxyFWHhwx4bXxImRm_qs852bSRo/preview"
-      class="w-full border-0 rounded-lg shadow-sm"
-      style="aspect-ratio: 8.5 / 11; min-height: 480px;"
-      title="Rich Parrish Resume"
-      loading="lazy"
-    ></iframe>
+    <!-- Resume image (regenerate: swift scripts/render-resume.swift <pdf> <png> 3 && magick <png> -quality 90 public/resume.webp) -->
+    <a
+      href="https://drive.google.com/file/d/1dB7SzhxyFWHhwx4bXxImRm_qs852bSRo/view"
+      target="_blank"
+      rel="noopener"
+      class="block cursor-zoom-in"
+      title="Open full-size PDF"
+    >
+      <img
+        src="/resume.webp"
+        alt="Rich Parrish resume"
+        width="1836"
+        height="2376"
+        class="w-full h-auto rounded-lg border border-border shadow-sm bg-white"
+      />
+    </a>
   </div>
 </BaseLayout>
