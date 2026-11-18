@@ -3,11 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Resume — Rich Parrish">
-  <div class="max-w-4xl mx-auto px-6 py-12">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-3xl font-bold text-ink">Resume</h1>
       <a
-        href="https://docs.google.com/document/d/1TS4BYXpohwtMqdRXcEpgOlpQHM3wUOmN/export?format=pdf"
+        href="https://drive.google.com/uc?export=download&id=1dB7SzhxyFWHhwx4bXxImRm_qs852bSRo"
         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium text-ink hover:bg-cream-dark transition-colors"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -17,14 +17,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </a>
     </div>
 
-    <!-- Google Doc Embed -->
+    <!-- Google Drive PDF Embed -->
     <iframe
-      src="https://docs.google.com/document/d/1TS4BYXpohwtMqdRXcEpgOlpQHM3wUOmN/preview"
-      class="w-full border-0"
-      style="height: 1200px;"
+      src="https://drive.google.com/file/d/1dB7SzhxyFWHhwx4bXxImRm_qs852bSRo/preview"
+      class="w-full border-0 rounded-lg shadow-sm"
+      style="aspect-ratio: 8.5 / 11; min-height: 480px;"
       title="Rich Parrish Resume"
       loading="lazy"
-      scrolling="no"
     ></iframe>
   </div>
 </BaseLayout>
